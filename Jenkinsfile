@@ -5,7 +5,6 @@ pipeline {
       defaultContainer 'maven'
       idleMinutes 1
     }
-
   }
   stages {
     stage('Build') {
@@ -15,14 +14,12 @@ pipeline {
             container(name: 'maven') {
               sh 'mvn compile'
             }
-
           }
         }
-
       }
     }
 
-    stage(‘StaticAnalysis') {
+    stage('StaticAnalysis') { // Corrigido as aspas simples para aspas duplas
       parallel {
         stage('SCA') {
           steps {
@@ -31,16 +28,16 @@ pipeline {
                 sh 'mvn org.owasp:dependency-check-maven:check'
               }
             }
-
           }
           post {
             always {
               archiveArtifacts allowEmptyArchive: true, artifacts: 'target/dependency-check-report.html',
               fingerprint: true, onlyIfSuccessful: true
-                // dependencyCheckPublisher pattern: 'report.xml'
-              }
             }
+          }
+        }
       }
+    }
 
     stage('Package') {
       parallel {
@@ -51,6 +48,8 @@ pipeline {
             }
           }
         }
+      }
+    }
 
     stage('OCI Image BnP') {
       steps {
@@ -59,16 +58,11 @@ pipeline {
         }
       }
     }
-    }
-    }
 
     stage('Deploy to Dev') {
       steps {
         sh 'echo done'
       }
     }
-
   }
 }
-
-
