@@ -43,20 +43,17 @@ pipeline {
             container(name: 'maven') {
               sh 'mvn package -DskipTests'
             }
-
           }
         }
-
-      }
-    }
 
     stage('OCI Image BnP') {
       steps {
         container(name: 'kaniko') {
           sh '/kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --cache=true --destination=docker.io/danielmagevski/dso-demo'
         }
-
       }
+    }
+    }
     }
 
     stage('Deploy to Dev') {
@@ -67,3 +64,5 @@ pipeline {
 
   }
 }
+
+
